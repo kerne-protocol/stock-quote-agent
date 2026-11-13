@@ -1,0 +1,21 @@
+{
+  "name": "kerne-stock-quote-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pricing agent for covered calls on Coinbase tokenized stocks on Base. Publishes a signed REFERENCE quote. Nothing executes from it.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "vectors": "node --experimental-strip-types scripts/math-vectors.ts",
+    "cycle": "node --experimental-strip-types scripts/local-cycle.ts",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.9.7",
+    "@noble/hashes": "^1.8.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250620.0",
+    "typescript": "^5.8.3"
+  }
+}

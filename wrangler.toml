@@ -1,0 +1,28 @@
+name = "kerne-stock-quote"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+workers_dev = true
+preview_urls = false
+# The Cloudflare account id is left out of the public copy. Wrangler asks for it, or reads
+# CLOUDFLARE_ACCOUNT_ID from the environment.
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[kv_namespaces]]
+binding = "QUOTE_KV"
+# Replace with the id of your own KV namespace (`npx wrangler kv namespace create STOCK_QUOTE_KV`).
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+[vars]
+EXPECTED_SIGNER = "0x9653Bf177239C979921DC8C0639eD00409F4Db88"
+SIGNER_VALID_FROM = "2026-11-12T00:00:00Z"
+
+# verify.py and the reference contract are served as plain text from the Worker itself.
+[[rules]]
+type = "Text"
+globs = ["**/*.py", "**/*.sol"]
+fallthrough = true
+
+[observability]
+enabled = true

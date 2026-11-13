@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+contracts/out/
+contracts/cache/
+contracts/lib/
+__pycache__/
+vectors.json
+# Nothing that can hold a key is ever tracked here.
+*.key
+*.pem
+.dev.vars
+.env
+.env.*
