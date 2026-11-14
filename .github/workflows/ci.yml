@@ -1,0 +1,69 @@
+name: ci
+
+# Checks the quote agent from a clean checkout on every push and pull request.
+#
+# Hermetic: no RPC endpoint, no key, no Cloudflare account. The fork tests under
+# contracts/ are opt-in (FORK_TESTS=1) and are not run here, because a public
+# badge that goes red when somebody else's RPC rate-limits teaches people to
+# ignore the badge. Without FORK_TESTS they compile and return early.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  math:
+    name: typecheck + 2,440 math vectors against the Python verifier
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install (lockfile only)
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck the Worker
+        run: npm run typecheck
+
+      - name: Write vectors from the Worker's integer math
+        run: node --experimental-strip-types scripts/math-vectors.ts vectors.json
+
+      - name: Recompute every vector with the independent verifier
+        run: python -I scripts/math_vectors_check.py vectors.json
+
+  contracts:
+    name: forge build + forge test (reference keeper, fork tests off)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          # The version this folder was built and tested with on 2026-11-13.
+          version: v1.5.1
+
+      - name: Fetch forge-std (not vendored here)
+        run: git clone --depth 1 --branch v1.12.0 https://github.com/foundry-rs/forge-std contracts/lib/forge-std
+
+      - name: Build
+        working-directory: contracts
+        run: forge build
+
+      - name: Test
+        working-directory: contracts
+        run: forge test -vv
