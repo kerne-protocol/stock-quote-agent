@@ -1,0 +1,11 @@
+{
+  "name": "kerne-quote-client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fetch and verify Kerne's signed TSLAc covered call quote in one call. Reference only.",
+  "type": "module",
+  "main": "kerne-quote.mjs",
+  "scripts": { "example": "node example.mjs", "test": "node test.mjs" },
+  "dependencies": { "viem": "2.57.12" },
+  "license": "MIT"
+}

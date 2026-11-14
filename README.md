@@ -72,6 +72,24 @@ One dedicated key, used for nothing else, signs twice:
 The Worker refuses to sign unless its key derives to the published signer, and checks both
 signatures by recovery before it stores anything. The HTTP handler only serves stored records.
 
+## Use it from your own code
+
+`client/kerne-quote.mjs` is a 30-line client (one dependency, `viem`) that fetches the latest quote
+and returns it only after the hash, the EIP-191 signature and, for a priced quote, the EIP-712
+signature all check out against the pinned signer. Every value it returns comes from the signed
+bytes.
+
+```js
+import { getKerneQuote } from './client/kerne-quote.mjs'
+
+const q = await getKerneQuote()
+if (q.ok) console.log(q.symbol, q.spot, q.strike, q.premiumBps, q.expiry)
+```
+
+It is for baskets, indexes and agents that want a covered call reference price for TSLAc next to
+their own holdings. `cd client && npm ci && node test.mjs` runs it against the live endpoint and
+against tampered, re-hashed, stranger-signed and stale records. Details in [client/README.md](client/README.md).
+
 ## Verify it yourself
 
 ```
